@@ -14,10 +14,6 @@ function getComputerChoice() {
 }
 
 function playRound(playerSelection, computerSelection) {
-	if (playerSelection === null) {
-		return 'The player cancelled the game.'
-	}
-
 	if (playerSelection === computerSelection) {
 		return 'It\'s a Draw. Nobody Wins';
 	} else if (playerSelection === 'Rock') {
@@ -41,51 +37,51 @@ function playRound(playerSelection, computerSelection) {
 	}
 }
 
-function getPlayerChoice() {
-	let input = prompt('Type your weapon.');
-	if (input === null) {
-		return input;
-	}
-	let standardInput = input.charAt(0).toUpperCase() + input.slice(1).toLowerCase();
-	switch (standardInput) {
-		case 'Rock':
-		case 'Paper':
-		case 'Scissors':
-			return standardInput;
-		default:
-			console.log(`There is a misinput. The input was: ${input}.`);
-			return getPlayerChoice();
-	}
+
+function getPlayerChoice(event) {
+	let playerChoice = event.target.textContent;
+	let outcome = playRound(playerChoice, getComputerChoice());
+
+	output.textContent = outcome;
+}
+
+function setScore(computerScore, playerScore) {
+	scoreBoard.textContent = `Computer: ${computerScore} Player: ${playerScore}`;
 }
 
 function game() {
-	let computerScore = 0;
-	let playerScore = 0;
-	for (i = 0; i < 5; i++) {
-		let outcome = playRound(getPlayerChoice(), getComputerChoice());
-		if (outcome.includes('You Win!')) {
-			playerScore++;
-		} else if (outcome.includes('You Lose!')) {
-			computerScore++;
-		} else if (outcome.includes('cancelled')) {
-			console.log(outcome);
-			return false;
-		}
-		console.log(outcome);
+	if (resetCondition) {
+		endResult.textContent = '';
+		setScore(0, 0);
+		resetCondition = false;
 	}
+	let computerScore = parseInt(scoreBoard.textContent.split(' ')[1]);
+	let playerScore = parseInt(scoreBoard.textContent.split(' ')[3]);
+	if (output.textContent.includes('You Win!')) {
+		playerScore++;
+	} else if (output.textContent.includes('You Lose!')) {
+		computerScore++;
+	}
+	setScore(computerScore, playerScore);
 
-	if (playerScore > computerScore) {
-		let scoreDifference = playerScore - computerScore;
-		console.log(`The player has Won by ${scoreDifference}\
-		 round${scoreDifference > 1 ? 's' : ''}!`);
-		return true;
-	} else if (playerScore < computerScore) {
-		let scoreDifference = computerScore - playerScore;
-		console.log(`The computer Wins by ${scoreDifference}\
-		round${scoreDifference > 1 ? 's' : ''}!`);
-		return true;
-	} else {
-		console.log('It was a Draw!');
-		return true;
+	if (playerScore === 5 || computerScore === 5) {
+		if (playerScore > computerScore) {
+			endResult.textContent = 'The player has won the game!';
+		} else if (playerScore < computerScore) {
+			endResult.textContent = 'The player has lost the game.';
+		} else {
+			endResult.textContent = 'It\'s a draw.';
+		}
+		resetCondition = true;
 	}
- }
+}
+
+const output = document.querySelector('.output');
+const buttons = document.querySelectorAll('button');
+const endResult = document.querySelector('.endresult');
+const scoreBoard = document.querySelector('.scores');
+
+let resetCondition = false;
+
+buttons.forEach(element => element.addEventListener('click', getPlayerChoice));
+buttons.forEach(element => element.addEventListener('click', game));
