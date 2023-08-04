@@ -46,7 +46,25 @@ function getPlayerChoice(event) {
 }
 
 function setScore(computerScore, playerScore) {
-	scoreBoard.textContent = `Computer: ${computerScore} Player: ${playerScore}`;
+	scoreBoard.textContent = `${computerScore} : ${playerScore}`;
+}
+
+function getScore(target) {
+
+	let playerScore = parseInt(scoreBoard.textContent.split(':')[1]);
+	let computerScore = parseInt(scoreBoard.textContent.split(':')[0]);
+
+	switch (target) {
+		case 0:
+			return playerScore;
+			break;
+		case 1:
+			return computerScore;
+			break;
+		default:
+			return 'error from getScore';
+			break;
+	}
 }
 
 function game() {
@@ -55,8 +73,8 @@ function game() {
 		setScore(0, 0);
 		resetCondition = false;
 	}
-	let computerScore = parseInt(scoreBoard.textContent.split(' ')[1]);
-	let playerScore = parseInt(scoreBoard.textContent.split(' ')[3]);
+	let computerScore = getScore(1);
+	let playerScore = getScore(0);
 	if (output.textContent.includes('You Win!')) {
 		playerScore++;
 	} else if (output.textContent.includes('You Lose!')) {
